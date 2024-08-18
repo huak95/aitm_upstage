@@ -17,6 +17,9 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import Optional
 
+import concurrent.futures
+import time
+
 app = FastAPI()
 
 # Define Main Function
@@ -105,12 +108,28 @@ class SolarQATranscriptionModel(BaseQAModel):
         return answer
 
 from sentence_transformers import SentenceTransformer
+
 class BGEm3EmbeddingModel(BaseEmbeddingModel):
     def __init__(self, model_name="BAAI/bge-m3"):
         self.model = SentenceTransformer(model_name)
 
     def create_embedding(self, text):
         return self.model.encode(text)
+
+class UpstageEmbeddingModel(BaseEmbeddingModel):
+    def __init__(self, model_name='solar-embedding-1-large-query'):
+        self.model_name = model_name
+        self.client = OpenAI(
+            api_key=UPSTAGE_API_KEY,
+            base_url="https://api.upstage.ai/v1/solar"
+        )
+
+    def create_embedding(self, text):
+        response = self.client.embeddings.create(
+            input=text,
+            model=self.model_name
+            )
+        return response.data[0].embedding
 
 def load_df(path):
     with open(path, 'r') as f:
@@ -134,6 +153,33 @@ def get_script_without_timestamp_sort(df):
         script += "\n"
     return script
 
+def solar_extractor(script):
+    r = get_response(
+        system_prompt="""\
+        You are a English speaker helpful assistant. \
+        Guess the meeting type and Business Domain from the transcript. \
+        In a JSON Format {"meeting_type": str, "business_domain": str}. \
+        Each values is a sentence not word. \
+        """, 
+        user_prompt=f"```transcript\n{script[:2048]}\n```",
+        api_key=UPSTAGE_API_KEY,
+    )
+    return json.loads(r)    
+
+def solar_prompter(prompts_list, meeting_type, business_domain):
+    r = get_response(
+        system_prompt= f"""\
+        Write 5 to 7 questions that make the meeting more clear and effective. \
+        For '{meeting_type}' Meeting type and '{business_domain}' domain. \
+        Using this format ["q1","q2"].
+        Based on following example question. \
+        """,
+        user_prompt=f"Example Question: {str(prompts_list)}",
+        api_key=UPSTAGE_API_KEY,
+    )
+    print(r)
+    return eval(r)
+
 def SolarRapperQA(input_dict):
     """
     input_dict = [{
@@ -148,8 +194,11 @@ def SolarRapperQA(input_dict):
     RAC = RetrievalAugmentationConfig(
         summarization_model=SolarSummarizationModel(), 
         qa_model=SolarQATranscriptionModel(), 
-        embedding_model=BGEm3EmbeddingModel(),
-        tb_max_tokens=512,
+        # embedding_model=BGEm3EmbeddingModel(),
+        tb_embedding_models={'OpenAI': UpstageEmbeddingModel('solar-embedding-1-large-passage')}, # Tree Builder
+        tr_embedding_model=UpstageEmbeddingModel('solar-embedding-1-large-query'), # Tree Retriver
+        tb_max_tokens=1024,
+        tb_num_layers=3,
         tb_summarization_length=256,
         )
 
@@ -168,26 +217,49 @@ def SolarRapperQA(input_dict):
     all_users = all_df['speaker'].unique().tolist()
 
     querys = [
-        'Which users spoke in this meeting? Only from [name]. Answer in bullet form',
-        'What are the 3 main agendas of this meeting? Tell them in ordered lists',
-        'Please summarize this meeting. Tell them in short bullets',
-        'What should not be talked about in this meeting? Why is that? Explain step by step. Tell them in ordered lists',
-        'What should be done to make this meeting better? In terms of how to speak. Why is that? Explain step by step',
-    ]
-
-    qtitles = [
         'Who is attending this meeting?',
         'Main agenda for this meeting',
         'Meeting summary',
         'What should not be discussed in this meeting?',
         'What should be done to make this meeting better?',
     ]
-
+    
+    try:
+        # == Solar Extractor ==
+        d = solar_extractor(script)
+        meeting_type = d['meeting_type']
+        business_domain = d['business_domain']
+        
+    except:
+        meeting_type = ""
+        business_domain = ""
+        
+    try:
+        # == Solar Prompter ==
+        querys = solar_prompter(querys, meeting_type, business_domain)
+    except:
+        print("Prompter Error")
+        
+    # get context from rapper
     all_response = []
     for i, q in enumerate(querys):
-        answer = RA_MITM.answer_question(q, top_k=10, collapse_tree=True,)
         context = RA_MITM.retrieve(q)
-        all_response.append({'question': qtitles[i], 'context': context, 'answer': answer})
+        all_response.append({'question': q, 'context': context})
+
+    solar_model = SolarQATranscriptionModel()
+    
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        # Submit tasks to the executor
+        futures = [executor.submit(
+            solar_model.answer_question, 
+            question=r['question'], 
+            context=r['context']
+            ) for r in all_response]
+        
+        # Collect the results as they complete
+        answers = [future.result() for future in concurrent.futures.as_completed(futures)]
+    
+    all_response = [{'question': d['question'], 'context': d['context'], 'answer': answers[i]} for i, d in enumerate(all_response)]
 
     # title 
     title_sum = RA_MITM.answer_question("Summarize the information into one short sentence, which becomes the topic of the meeting report.", top_k=10, collapse_tree=True,)
@@ -207,26 +279,23 @@ def SolarRapperQA(input_dict):
     # add user feedback
     md_render_users = {}
     for user in all_users:
-        querys = []
+        querys_user = []
         qtitles = []
         
         # prompt 1        
-        q = f'What can I do to make this meeting better? For "[{user}]" in terms of speaking, why is that? Explain step by step.'
-        querys.append(q)
-        qtitles.append(f'What can I do to make this meeting better? For "[{user}]"')
+        q = f'What can I do to make this meeting better? For "[{user}]"'
+        querys_user.append(q)
         
         # prompt 2        
-        q = f'What should not be discussed in this meeting for "[{user}]"? Why is that? Explain step by step, point by point, like ordered lists.'
-        querys.append(q)
-        qtitles.append(f'What should not be discussed in this meeting for "[{user}]"?')
+        q = f'What should not be discussed in this meeting for "[{user}]"?'
+        querys_user.append(q)
 
-        # qa
         all_response = []
-        for i, q in enumerate(querys):
+        for i, q in enumerate(querys_user):
             answer = RA_MITM.answer_question(q, top_k=10, collapse_tree=True,)
             context = RA_MITM.retrieve(q)
-            all_response.append({'question': qtitles[i], 'context': context, 'answer': answer})
-
+            all_response.append({'question': q, 'context': context, 'answer': answer})
+            
         # create md render
         md_render_user = ""
         md_render_user += f"# {title_sum} For [{user}]\n"
@@ -244,7 +313,10 @@ def SolarRapperQA(input_dict):
     response = {
         "transcript": script,
         "summary": md_render_main,
-        "users_summary": md_render_users
+        "users_summary": md_render_users,
+        'meeting_type': meeting_type,
+        'business_domain': business_domain, 
+        'querys': querys,
     }
 
     return response
@@ -266,10 +338,12 @@ def read_root():
 @app.post("/llm")
 def read_item(body: Text):
     try :
+        tic = time.time()
         prediction = SolarRapperQA(body.input_dict)
+        total_time = time.time() - tic
     except Exception as err:
         return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
         content={"success": False, "details":f"Error Occured : {err}" })
-    return {"success": True,"output" : prediction}
+    return {"success": True,"output" : prediction, "total_time": total_time}
 
 # fastapi dev app.py
