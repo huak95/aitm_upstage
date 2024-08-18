@@ -17,6 +17,9 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import Optional
 
+import concurrent.futures
+import time
+
 app = FastAPI()
 
 # Define Main Function
@@ -105,12 +108,28 @@ class SolarQATranscriptionModel(BaseQAModel):
         return answer
 
 from sentence_transformers import SentenceTransformer
+
 class BGEm3EmbeddingModel(BaseEmbeddingModel):
     def __init__(self, model_name="BAAI/bge-m3"):
         self.model = SentenceTransformer(model_name)
 
     def create_embedding(self, text):
         return self.model.encode(text)
+
+class UpstageEmbeddingModel(BaseEmbeddingModel):
+    def __init__(self, model_name='solar-embedding-1-large-query'):
+        self.model_name = model_name
+        self.client = OpenAI(
+            api_key=UPSTAGE_API_KEY,
+            base_url="https://api.upstage.ai/v1/solar"
+        )
+
+    def create_embedding(self, text):
+        response = self.client.embeddings.create(
+            input=text,
+            model=self.model_name
+            )
+        return response.data[0].embedding
 
 def load_df(path):
     with open(path, 'r') as f:
@@ -148,8 +167,11 @@ def SolarRapperQA(input_dict):
     RAC = RetrievalAugmentationConfig(
         summarization_model=SolarSummarizationModel(), 
         qa_model=SolarQATranscriptionModel(), 
-        embedding_model=BGEm3EmbeddingModel(),
-        tb_max_tokens=512,
+        # embedding_model=BGEm3EmbeddingModel(),
+        tb_embedding_models={'OpenAI': UpstageEmbeddingModel('solar-embedding-1-large-passage')}, # Tree Builder
+        tr_embedding_model=UpstageEmbeddingModel('solar-embedding-1-large-query'), # Tree Retriver
+        tb_max_tokens=1024,
+        tb_num_layers=3,
         tb_summarization_length=256,
         )
 
@@ -185,9 +207,24 @@ def SolarRapperQA(input_dict):
 
     all_response = []
     for i, q in enumerate(querys):
-        answer = RA_MITM.answer_question(q, top_k=10, collapse_tree=True,)
+        # answer = RA_MITM.answer_question(q, top_k=10, collapse_tree=True,)
         context = RA_MITM.retrieve(q)
-        all_response.append({'question': qtitles[i], 'context': context, 'answer': answer})
+        all_response.append({'question': qtitles[i], 'context': context})
+
+    solar_model = SolarQATranscriptionModel()
+    
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        # Submit tasks to the executor
+        futures = [executor.submit(
+            solar_model.answer_question, 
+            question=r['question'], 
+            context=r['context']
+            ) for r in all_response]
+        
+        # Collect the results as they complete
+        answers = [future.result() for future in concurrent.futures.as_completed(futures)]
+    
+    all_response = [{'question': d['question'], 'context': d['context'], 'answer': answers[i]} for i, d in enumerate(all_response)]
 
     # title 
     title_sum = RA_MITM.answer_question("Summarize the information into one short sentence, which becomes the topic of the meeting report.", top_k=10, collapse_tree=True,)
@@ -220,13 +257,12 @@ def SolarRapperQA(input_dict):
         querys.append(q)
         qtitles.append(f'What should not be discussed in this meeting for "[{user}]"?')
 
-        # qa
         all_response = []
         for i, q in enumerate(querys):
             answer = RA_MITM.answer_question(q, top_k=10, collapse_tree=True,)
             context = RA_MITM.retrieve(q)
             all_response.append({'question': qtitles[i], 'context': context, 'answer': answer})
-
+            
         # create md render
         md_render_user = ""
         md_render_user += f"# {title_sum} For [{user}]\n"
@@ -244,7 +280,7 @@ def SolarRapperQA(input_dict):
     response = {
         "transcript": script,
         "summary": md_render_main,
-        "users_summary": md_render_users
+        "users_summary": md_render_users,
     }
 
     return response
@@ -266,10 +302,12 @@ def read_root():
 @app.post("/llm")
 def read_item(body: Text):
     try :
+        tic = time.time()
         prediction = SolarRapperQA(body.input_dict)
+        total_time = time.time() - tic
     except Exception as err:
         return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
         content={"success": False, "details":f"Error Occured : {err}" })
-    return {"success": True,"output" : prediction}
+    return {"success": True,"output" : prediction, "total_time": total_time}
 
 # fastapi dev app.py
