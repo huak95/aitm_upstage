@@ -253,7 +253,7 @@ def SolarRapperQA(input_dict):
 
 # API
 
-with open("./sample_data/wk2.json", 'r') as f:
+with open("./dataset/sample_data/wk2.json", 'r') as f:
     sample_input_dict = json.load(f)
 
 class Text(BaseModel):
