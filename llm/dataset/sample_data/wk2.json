@@ -1,0 +1,386 @@
+[
+  {
+    "text": "Hello everyone Let's have a meeting about the progress of the work soon.",
+    "speaker": "ninewithane",
+    "start": 0.009,
+    "end": 4.582
+  },
+  {
+    "text": "I have a question, I want to know about the LM side and the SR side.",
+    "speaker": "ninewithane",
+    "start": 5.111,
+    "end": 11.152
+  },
+  {
+    "text": "What was it like to see? Ezawa's POC",
+    "speaker": "ninewithane",
+    "start": 11.63,
+    "end": 15.776
+  },
+  {
+    "text": "Does SR have a good API support? How accurate are the models?",
+    "speaker": "ninewithane",
+    "start": 16.186,
+    "end": 21.476
+  },
+  {
+    "text": "And what is the real-time factor of each model like and which one is fun to use?",
+    "speaker": "ninewithane",
+    "start": 22.108,
+    "end": 26.613
+  },
+  {
+    "text": "Okay, Pong Chula F. Ah, cheating.",
+    "speaker": "jarun_title",
+    "start": 31.735,
+    "end": 36.309
+  },
+  {
+    "text": "As he said before, that is, Irus is the one that we watch together.",
+    "speaker": "jarun_title",
+    "start": 36.531,
+    "end": 42.776
+  },
+  {
+    "text": "The real-time factor is about one to thirty, right?",
+    "speaker": "jarun_title",
+    "start": 42.776,
+    "end": 49.125
+  },
+  {
+    "text": "And now I have to look at the matter of connecting the delivery lot.",
+    "speaker": "jarun_title",
+    "start": 50.319,
+    "end": 56.974
+  },
+  {
+    "text": "Nampa Thai is like we will connect the relationship project to the disk to teach how to change like this.",
+    "speaker": "jarun_title",
+    "start": 56.974,
+    "end": 63.971
+  },
+  {
+    "text": "yes",
+    "speaker": "jarun_title",
+    "start": 63.971,
+    "end": 64.671
+  },
+  {
+    "text": "Okay, so on the side of",
+    "speaker": "ninewithane",
+    "start": 68.234,
+    "end": 73.2
+  },
+  {
+    "text": "ASR, the one that is the wrong word, do you find it a lot?",
+    "speaker": "ninewithane",
+    "start": 73.712,
+    "end": 79.667
+  },
+  {
+    "text": "Our work domain",
+    "speaker": "ninewithane",
+    "start": 79.94,
+    "end": 81.032
+  },
+  {
+    "text": "It will be done by walking or what is the main thing. It will be a child's name.",
+    "speaker": "jarun_title",
+    "start": 85.217,
+    "end": 90.063
+  },
+  {
+    "text": "Which, with our strength, we will have something to say.",
+    "speaker": "jarun_title",
+    "start": 90.626,
+    "end": 94.329
+  },
+  {
+    "text": "English words and Thai words are interchanged. causing it to still be produced",
+    "speaker": "jarun_title",
+    "start": 94.807,
+    "end": 99.466
+  },
+  {
+    "text": "Heh heh heh heh heh heh",
+    "speaker": "ninewithane",
+    "start": 98.78,
+    "end": 102.398
+  },
+  {
+    "text": "But just a little, the next clip will not have an effect.",
+    "speaker": "jarun_title",
+    "start": 100.951,
+    "end": 105.387
+  },
+  {
+    "text": "And from the LLM side that went to POC, what do you think about it in terms of results?",
+    "speaker": "ninewithane",
+    "start": 104.889,
+    "end": 111.408
+  },
+  {
+    "text": "of doing both the first one and then summarization",
+    "speaker": "ninewithane",
+    "start": 111.698,
+    "end": 116.937
+  },
+  {
+    "text": "I tried several methods, I think.",
+    "speaker": "lnwharry",
+    "start": 119.991,
+    "end": 124.565
+  },
+  {
+    "text": "The last time I tried it. Quite a word.",
+    "speaker": "lnwharry",
+    "start": 124.957,
+    "end": 128.114
+  },
+  {
+    "text": "That is, it is like giving the first income will deduct the level for you.",
+    "speaker": "lnwharry",
+    "start": 128.695,
+    "end": 132.517
+  },
+  {
+    "text": "That is, it's like when you curse, you just come out and rely on it.",
+    "speaker": "lnwharry",
+    "start": 133.336,
+    "end": 136.715
+  },
+  {
+    "text": "Only you come in and select the scenes with the group, which ones are close to each other, then let them speak.",
+    "speaker": "lnwharry",
+    "start": 137.039,
+    "end": 143.217
+  },
+  {
+    "text": "This is Bodel. Can it be summed up in layers?",
+    "speaker": "lnwharry",
+    "start": 143.575,
+    "end": 147.671
+  },
+  {
+    "text": "Then I took all the new elephants and clustered them again.",
+    "speaker": "lnwharry",
+    "start": 147.858,
+    "end": 153.729
+  },
+  {
+    "text": "Keep doing it until The thing that can't be screened is that there might be some leftovers.",
+    "speaker": "lnwharry",
+    "start": 154.343,
+    "end": 159.633
+  },
+  {
+    "text": "Just 1-2 layers is fine.",
+    "speaker": "lnwharry",
+    "start": 160.401,
+    "end": 164.241
+  },
+  {
+    "text": "This time, when I did something like this and then retaped it, it appeared that",
+    "speaker": "lnwharry",
+    "start": 164.565,
+    "end": 169.48
+  },
+  {
+    "text": "Athit asked when the summary was.",
+    "speaker": "lnwharry",
+    "start": 169.48,
+    "end": 172.193
+  },
+  {
+    "text": "Information that needs clarification Did it quite well. There's a lot more dynamics.",
+    "speaker": "lnwharry",
+    "start": 172.5,
+    "end": 179.155
+  },
+  {
+    "text": "And after this I think I should take this and do it.",
+    "speaker": "lnwharry",
+    "start": 179.701,
+    "end": 184.753
+  },
+  {
+    "text": "You can plant Off Concept or POC. I think I should be able to do it next week.",
+    "speaker": "lnwharry",
+    "start": 184.753,
+    "end": 191.067
+  },
+  {
+    "text": "After looking at it, it's a result that should be okay and can be made better.",
+    "speaker": "ninewithane",
+    "start": 197.722,
+    "end": 202.875
+  },
+  {
+    "text": "in ASR and LLM",
+    "speaker": "ninewithane",
+    "start": 202.875,
+    "end": 208.643
+  },
+  {
+    "text": "and he thought he didn't dare tell the plaintiff",
+    "speaker": "lnwharry",
+    "start": 208.131,
+    "end": 212.841
+  },
+  {
+    "text": "Let's use it for this part of the board.",
+    "speaker": "lnwharry",
+    "start": 213.217,
+    "end": 216.544
+  },
+  {
+    "text": "Um, I understand, then.",
+    "speaker": "ninewithane",
+    "start": 218.37,
+    "end": 222.312
+  },
+  {
+    "text": "think there might not be any problems with implementation or there might be problems with deployment.",
+    "speaker": "ninewithane",
+    "start": 223.404,
+    "end": 230.401
+  },
+  {
+    "text": "Eh, so what?",
+    "speaker": "ninewithane",
+    "start": 230.981,
+    "end": 232.841
+  },
+  {
+    "text": "The other side is the marketing team that will do marketing for us to think.",
+    "speaker": "ninewithane",
+    "start": 233.643,
+    "end": 240.589
+  },
+  {
+    "text": "Does anyone have an idea of where he has gone so far?",
+    "speaker": "ninewithane",
+    "start": 240.845,
+    "end": 244.77
+  },
+  {
+    "text": "for great science",
+    "speaker": "lnwharry",
+    "start": 248.251,
+    "end": 249.411
+  },
+  {
+    "text": "In the Angkat section. Mr. Tor Roi was annoyed and went to live in Angkat.",
+    "speaker": "jarun_title",
+    "start": 249.722,
+    "end": 254.125
+  },
+  {
+    "text": "He is studying information. Reset data that is required to",
+    "speaker": "jarun_title",
+    "start": 254.756,
+    "end": 259.5
+  },
+  {
+    "text": "Presentation of this size to investors as well.",
+    "speaker": "jarun_title",
+    "start": 261.172,
+    "end": 264.21
+  },
+  {
+    "text": "Um, okay, I understand. Ah, okay, there you go.",
+    "speaker": "ninewithane",
+    "start": 263.285,
+    "end": 268.814
+  },
+  {
+    "text": "I couldn't help but ask. The title during this time has been seen",
+    "speaker": "ninewithane",
+    "start": 269.241,
+    "end": 274.48
+  },
+  {
+    "text": "New video clip. Lisa's MV. Have you seen it yet? Rockstar",
+    "speaker": "ninewithane",
+    "start": 274.991,
+    "end": 279.48
+  },
+  {
+    "text": "Oh, I watched it from the beginning, it was one of the first one in a million views.",
+    "speaker": "jarun_title",
+    "start": 282.998,
+    "end": 288.852
+  },
+  {
+    "text": "The MV is quite well made. What do you think, Harry? Have you seen it?",
+    "speaker": "ninewithane",
+    "start": 288.746,
+    "end": 293.08
+  },
+  {
+    "text": "oh",
+    "speaker": "lnwharry",
+    "start": 295.06,
+    "end": 295.879
+  },
+  {
+    "text": "want you to dance for an hour, right? I watched the first minute and I saw",
+    "speaker": "lnwharry",
+    "start": 296.732,
+    "end": 302.193
+  },
+  {
+    "text": "The atmosphere behind Yaowarat is very beautiful.",
+    "speaker": "lnwharry",
+    "start": 302.193,
+    "end": 306.237
+  },
+  {
+    "text": "Yes, this one I agree with. Yao Racha, our country, is really beautiful. He said that this evening, let's go to Yaowarat.",
+    "speaker": "ninewithane",
+    "start": 307.09,
+    "end": 312.568
+  },
+  {
+    "text": "Just a little bit, if that's the case?",
+    "speaker": "ninewithane",
+    "start": 312.722,
+    "end": 314.445
+  },
+  {
+    "text": "Good. Which shop is this?",
+    "speaker": "jarun_title",
+    "start": 320.2,
+    "end": 322.401
+  },
+  {
+    "text": "And then there will be",
+    "speaker": "lnwharry",
+    "start": 321.288,
+    "end": 322.568
+  },
+  {
+    "text": "I'll take it for a while. I'll make my decision when I go. There's probably nothing more than just this.",
+    "speaker": "ninewithane",
+    "start": 322.261,
+    "end": 328.951
+  },
+  {
+    "text": "Thank you very much. Hello.",
+    "speaker": "ninewithane",
+    "start": 333.148,
+    "end": 334.377
+  },
+  {
+    "text": "hello",
+    "speaker": "lnwharry",
+    "start": 333.353,
+    "end": 334.497
+  },
+  {
+    "text": "Hello, here.",
+    "speaker": "jarun_title",
+    "start": 333.783,
+    "end": 334.602
+  }
+]
