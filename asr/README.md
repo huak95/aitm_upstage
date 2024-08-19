@@ -10,18 +10,9 @@ This project provides an Automatic Speech Recognition (ASR) module using Hugging
 
 ## Installation
 
-1. Clone the repository:
-
-    ```bash
-    git clone <repository-url>
-    cd <repository-directory>
-    ```
-
-2. Install the required Python packages:
-
-    ```bash
-    pip install -r requirements.txt
-    ```
+```
+pip install -r requirements.txt
+```
 
 ## Usage
 
