@@ -41,6 +41,9 @@ class ASR():
             feature_extractor=processor.feature_extractor,
             torch_dtype=torch_dtype,
             device=device,
+            chunk_length_s=30,
+            # stride_length_s=3,
+            generate_kwargs={"language": "english"},
         )
         return pipe
     
@@ -75,42 +78,6 @@ def combine_sort(json_list):
     df = pd.DataFrame(sum(json_list, [])).sort_values('start')
     json_output = df.to_json(orient='records', force_ascii=False)
     data        = {"output": json.loads(json_output)}
-    # with open('output.json', 'w', encoding='utf-8') as file:
-    #     json.dump(data, file, ensure_ascii=False, indent=4)
+    with open('output.json', 'w', encoding='utf-8') as file:
+        json.dump(data, file, ensure_ascii=False, indent=4)
     return data
-        
-# ----------------------------------------------------------------------------------------------------
-
-    # def transcribe(self, audio_root_dir, output_path='asr_output.json'):        
-    #     # audio_paths = glob(f'{audio_root_dir}/*.mp3')
-    #     audio_paths = glob(f'{audio_root_dir}/*.wav')
-    #     # offsets     = self.get_offset(audio_paths)
-    #     df          = pd.DataFrame()
-    #     result_df   = None
-        
-    #     for audio_path in audio_paths:
-    #         speaker_name = self.get_speaker_name(audio_path)
-    #         result       = self.asr_model(audio_path, return_timestamps=True)['chunks']
-    #         offset       = int(audio_path[audio_path.find('off')+3:].split('.')[0])
-    #         result_df    = self.convert_whisper_output_format(result, speaker_name, offset)
-    #         df           = pd.concat([df, result_df])
-    #     df = df.sort_values('start')
-        
-    #     json_output = df.to_json(orient='records', force_ascii=False)
-    #     data        = {"output": json.loads(json_output)}
-    #     with open(output_path, 'w', encoding='utf-8') as file:
-    #         json.dump(data, file, ensure_ascii=False, indent=4)
-    #     print(F'output json file save at {output_path}')
-    #     return df
-
-    # def get_speaker_name(self, audio_path):
-    #     speaker_name = audio_path.split('-')[2].split('_')[0].split('.')[0]
-    #     return speaker_name
-    
-    # def get_offset(self, audio_paths):
-    #     lenght = []
-    #     for audio_path in audio_paths:
-    #         lenght.append(len(AudioSegment.from_file(audio_path)) / 1000)
-    #     df = pd.DataFrame([audio_paths, lenght], index=['audio_path', 'duration']).T
-    #     offset = (df['duration'].max() - df['duration'])
-    #     return offset
